@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+
+require "baidu_geocoder"
+include BaiduGeocoder
+
+desc =  <<-EOF
+  Usage:
+      baidu_geocoder -a addr    : 返回坐标
+      baidu_geocoder -n name    : 返回地址
+      baidu_geocoder -l lat lng : 返回地址
+EOF
+
+if ARGV && ARGV.size > 1
+  option = ARGV[ 0 ].dup
+  puts case option
+  when '-a'
+    addr = ARGV[ 1 ].dup
+    loc = Geocoder.get_location_by_addr(addr)
+    if loc[:status]
+      puts "获取定位成功:"
+    else
+      puts "获取定位失败:"
+    end
+    loc.delete(:status)
+    puts loc.to_s
+  when '-n'
+    name = ARGV[ 1 ].dup
+    addr = Geocoder.get_address_by_name(name)
+    if addr[:status]
+      puts "获取地址成功:"
+    else
+      puts "获取地址失败:"
+    end
+    addr.delete(:status)
+    puts addr.to_s
+  when '-l'
+    if ARGV.size > 2
+      lat = ARGV[ 1 ].dup
+      lng = ARGV[ 2 ].dup
+      addr = Geocoder.get_address_by_loc(lat, lng)
+      if addr[:status]
+        puts "获取地址成功:"
+      else
+        puts "获取地址失败:"
+      end
+      addr.delete(:status)
+      puts addr.to_s
+    else
+      puts desc
+    end
+  else
+    puts desc
+  end
+else
+  puts desc
+end
